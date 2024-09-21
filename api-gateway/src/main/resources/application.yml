@@ -1,27 +1,49 @@
 spring:
- cloud:
-   gateway:
-     routes:
-       - id: lending-service
-         uri: lb://lending-service
-         predicates:
-           - Path=/lending-service/**
-         filters:
-           - AuthenticationFilter
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    circuitbreaker:
+      enabled: true
+    gateway:
+      routes:
+        - id: lending-service
+          uri: lb://lending-service
+          predicates:
+            - Path=/lending-service/**
+          filters:
+            - AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: lendingServiceCircuitBreaker
+                fallbackUri: forward:/fallback/lending-service-fallback
 
-       - id: auth-service
-         uri: lb://auth-service
-         predicates:
-           - Path=/auth/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authServiceCircuitBreaker
+                fallbackUri: forward:/fallback/auth-service-fallback
 
- application:
-   name: api-gateway
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+    instances:
+      lendingServiceCircuitBreaker:
+        baseConfig: default
+      authServiceCircuitBreaker:
+        baseConfig: default
 
 eureka:
   client:
     service-url:
-      defaultZone : http://localhost:8081/eureka/
-
+      defaultZone: http://localhost:8081/eureka/
 
 server:
   port: 8080

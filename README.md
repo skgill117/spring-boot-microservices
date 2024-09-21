@@ -14,6 +14,9 @@ MySQL/PostgreSQL (database for storing loan data)
 RestTemplate/WebClient (for external API calls)
 
 
+# Added Resilience4j for rate limiting and also implement circuit breaker using this library.
+
+
 
 Prerequisites
 Before you start, ensure you have the following installed:
