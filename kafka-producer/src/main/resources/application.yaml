@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3                  # Number of retries in case of failures
+      delivery-timeout-ms: 30000  # Timeout for receiving acknowledgment (30 seconds)
+      linger-ms: 10
+    topics:
+      topic1: my_first_topic
+      topic2: my_second_topic
